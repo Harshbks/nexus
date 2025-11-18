@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Search AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- 1. BACKGROUND & LAYOUT --- */
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; padding: 0; font-family: 'Poppins', sans-serif; min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+            /* Animated Deep Space Gradient */
+            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #23a6d5);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            margin-top: 10vh;
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        h1 {
+            color: white; font-weight: 600; font-size: 2.5rem;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3); margin-bottom: 30px;
+        }
+
+        /* --- 2. OUR MODERN SEARCH BAR --- */
+        .search-box-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+        }
+
+        #custom-input {
+            width: 100%;
+            padding: 18px 60px 18px 30px; /* Extra padding for Mic */
+            font-size: 18px;
+            font-family: 'Poppins', sans-serif;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        #custom-input:focus {
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        /* The Microphone Icon inside the bar */
+        #mic-btn {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        #mic-btn:hover { color: #e73c7e; }
+        
+        .listening {
+            color: #e73c7e !important;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.2); }
+            100% { transform: translateY(-50%) scale(1); }
+        }
+
+        /* --- 3. STYLING THE RESULTS --- */
+        /* We make the results container glass-like */
+        .gsc-control-cse {
+            background-color: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+        }
+        
+        /* Individual Result Cards */
+        .gsc-webResult.gsc-result {
+            background: rgba(255, 255, 255, 0.9) !important;
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: none !important;
+            transition: transform 0.2s;
+        }
+        
+        .gsc-webResult.gsc-result:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Remove Google's ugly promotions/ads styling if possible */
+        .gcsc-more-maybe-branding-root { display: none !important; }
+        
+        /* Typography fixes for results */
+        .gs-title { text-decoration: none !important; font-weight: 600 !important; }
+        .gs-snippet { font-size: 14px !important; line-height: 1.5 !important; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Nexus Search</h1>
+
+        <div class="search-box-wrapper">
+            <input type="text" id="custom-input" placeholder="Ask me anything..." onkeypress="handleEnter(event)">
+            <button id="mic-btn" onclick="startDictation()"><i class="fas fa-microphone"></i></button>
+        </div>
+
+        <div class="gcse-searchresults-only" data-enableHistory="true"></div>
+        
+        <script async src="https://cse.google.com/cse.js?cx=YOUR_CX_ID_HERE"></script>
+    </div>
+
+    <script>
+        // 1. Handle Enter Key
+        function handleEnter(e) {
+            if (e.key === "Enter") {
+                performSearch(e.target.value);
+            }
+        }
+
+        // 2. The "Hash" Search Method (100% Reliable)
+        function performSearch(query) {
+            if(!query) return;
+            
+            // We update the browser URL hash.
+            // Google's script listens for this specific pattern and fires the search.
+            window.location.hash = "gsc.q=" + encodeURIComponent(query);
+            
+            // Optional: Remove focus from input so mobile keyboard closes
+            document.getElementById('custom-input').blur();
+        }
+
+        // 3. Voice Search Logic
+        function startDictation() {
+            if (window.hasOwnProperty('webkitSpeechRecognition') || window.hasOwnProperty('SpeechRecognition')) {
+                var recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                recognition.lang = "en-US";
+                recognition.start();
+
+                var micBtn = document.getElementById('mic-btn');
+                micBtn.classList.add('listening');
+
+                recognition.onresult = function(e) {
+                    var transcript = e.results[0][0].transcript;
+                    
+                    // Put text in box
+                    document.getElementById('custom-input').value = transcript;
+                    
+                    // Stop animation
+                    micBtn.classList.remove('listening');
+                    recognition.stop();
+                    
+                    // Trigger Search
+                    performSearch(transcript);
+                };
+
+                recognition.onerror = function(e) {
+                    micBtn.classList.remove('listening');
+                    recognition.stop();
+                };
+            } else {
+                alert("Voice search is not supported in this browser.");
+            }
+        }
+    </script>
+
+</body>
+</html>
