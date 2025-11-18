@@ -3,192 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Search AI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>Nexus AI | Intelligent Search</title>
     <style>
-        /* --- 1. BACKGROUND & LAYOUT --- */
-        * { box-sizing: border-box; }
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.5);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
         body {
-            margin: 0; padding: 0; font-family: 'Poppins', sans-serif; min-height: 100vh;
-            display: flex; flex-direction: column; align-items: center;
-            /* Animated Deep Space Gradient */
-            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #23a6d5);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
         }
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .container {
-            margin-top: 10vh;
-            width: 90%;
-            max-width: 800px;
+        .header {
             text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeIn 1s ease-in;
         }
-
         h1 {
-            color: white; font-weight: 600; font-size: 2.5rem;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3); margin-bottom: 30px;
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -2px;
+            margin-bottom: 0.5rem;
         }
-
-        /* --- 2. OUR MODERN SEARCH BAR --- */
-        .search-box-wrapper {
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        .search-container {
+            width: 100%;
+            max-width: 700px;
             position: relative;
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto 40px auto;
+            margin-bottom: 3rem;
         }
-
-        #custom-input {
+        .search-box {
             width: 100%;
-            padding: 18px 60px 18px 30px; /* Extra padding for Mic */
-            font-size: 18px;
-            font-family: 'Poppins', sans-serif;
-            border: none;
+            padding: 1.2rem 1.5rem;
+            padding-right: 4rem;
             border-radius: 50px;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
+            border: 2px solid #334155;
+            background: var(--card-bg);
+            color: white;
+            font-size: 1.2rem;
             outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
-
-        #custom-input:focus {
-            transform: scale(1.02);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        .search-box:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
         }
-
-        /* The Microphone Icon inside the bar */
-        #mic-btn {
+        .search-btn {
             position: absolute;
-            right: 20px;
+            right: 10px;
             top: 50%;
             transform: translateY(-50%);
-            background: none;
+            background: var(--accent);
             border: none;
-            font-size: 22px;
-            color: #666;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
             cursor: pointer;
-            transition: color 0.3s;
-        }
-        
-        #mic-btn:hover { color: #e73c7e; }
-        
-        .listening {
-            color: #e73c7e !important;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: translateY(-50%) scale(1); }
-            50% { transform: translateY(-50%) scale(1.2); }
-            100% { transform: translateY(-50%) scale(1); }
-        }
-
-        /* --- 3. STYLING THE RESULTS --- */
-        /* We make the results container glass-like */
-        .gsc-control-cse {
-            background-color: transparent !important;
-            border: none !important;
-            padding: 0 !important;
-        }
-        
-        /* Individual Result Cards */
-        .gsc-webResult.gsc-result {
-            background: rgba(255, 255, 255, 0.9) !important;
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            margin-bottom: 20px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: none !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: transform 0.2s;
         }
-        
-        .gsc-webResult.gsc-result:hover {
-            transform: translateY(-2px);
+        .search-btn:hover {
+            transform: translateY(-50%) scale(1.1);
         }
-
-        /* Remove Google's ugly promotions/ads styling if possible */
-        .gcsc-more-maybe-branding-root { display: none !important; }
-        
-        /* Typography fixes for results */
-        .gs-title { text-decoration: none !important; font-weight: 600 !important; }
-        .gs-snippet { font-size: 14px !important; line-height: 1.5 !important; }
-
+        .search-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: white;
+        }
+        #results-area {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .result-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid #334155;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.5);
+            border-color: #475569;
+        }
+        .result-link {
+            font-size: 0.85rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .result-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: var(--text-primary);
+        }
+        .result-snippet {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .loading {
+            text-align: center;
+            color: var(--text-secondary);
+            display: none;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 2.5rem; }
+            .search-box { font-size: 1rem; }
+        }
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <h1>Nexus Search</h1>
-
-        <div class="search-box-wrapper">
-            <input type="text" id="custom-input" placeholder="Ask me anything..." onkeypress="handleEnter(event)">
-            <button id="mic-btn" onclick="startDictation()"><i class="fas fa-microphone"></i></button>
-        </div>
-
-        <div class="gcse-searchresults-only" data-enableHistory="true"></div>
-        
-        <script async src="https://cse.google.com/cse.js?cx=YOUR_CX_ID_HERE"></script>
+    <header class="header">
+        <h1>Nexus AI</h1>
+        <p class="tagline">Access the world's knowledge instantly.</p>
+    </header>
+    <div class="search-container">
+        <input type="text" id="search-input" class="search-box" placeholder="Ask Nexus anything... (e.g., 'Bhai Virendra')">
+        <button class="search-btn" onclick="performSearch()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+        </button>
     </div>
-
+    <div id="loading" class="loading">Processing query...</div>
+    <div id="results-area"></div>
     <script>
-        // 1. Handle Enter Key
-        function handleEnter(e) {
-            if (e.key === "Enter") {
-                performSearch(e.target.value);
+        // Your Google Custom Search credentials
+        const API_KEY = 'AIzaSyAf-fPasGFj6UyIWqNeD_wGtY6mTYdrfNA';
+        const CX_ID = '2654c88927cf44560';
+
+        const searchInput = document.getElementById('search-input');
+        const resultsArea = document.getElementById('results-area');
+        const loadingSpinner = document.getElementById('loading');
+
+        // Search on Enter key
+        searchInput.addEventListener('keyup', function (e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        async function performSearch() {
+            const query = searchInput.value.trim();
+            if (!query) return;
+
+            resultsArea.innerHTML = '';
+            loadingSpinner.style.display = 'block';
+
+            try {
+                // Compose API URL
+                const url = `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CX_ID}&q=${encodeURIComponent(query)}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                loadingSpinner.style.display = 'none';
+
+                if (data.items && data.items.length > 0) {
+                    displayResults(data.items);
+                } else if (data.error && data.error.message) {
+                    resultsArea.innerHTML = `<div style="text-align:center; color: #ef4444;">API Error: ${data.error.message}</div>`;
+                } else {
+                    resultsArea.innerHTML = `<div style="text-align:center; color: #94a3b8;">No results found for "${query}".</div>`;
+                }
+            } catch (error) {
+                loadingSpinner.style.display = 'none';
+                resultsArea.innerHTML = `<div style="text-align:center; color: #ef4444;">A network error occurred. Please check your internet connection or your API details.</div>`;
+                console.error(error);
             }
         }
 
-        // 2. The "Hash" Search Method (100% Reliable)
-        function performSearch(query) {
-            if(!query) return;
-            
-            // We update the browser URL hash.
-            // Google's script listens for this specific pattern and fires the search.
-            window.location.hash = "gsc.q=" + encodeURIComponent(query);
-            
-            // Optional: Remove focus from input so mobile keyboard closes
-            document.getElementById('custom-input').blur();
-        }
-
-        // 3. Voice Search Logic
-        function startDictation() {
-            if (window.hasOwnProperty('webkitSpeechRecognition') || window.hasOwnProperty('SpeechRecognition')) {
-                var recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-                recognition.lang = "en-US";
-                recognition.start();
-
-                var micBtn = document.getElementById('mic-btn');
-                micBtn.classList.add('listening');
-
-                recognition.onresult = function(e) {
-                    var transcript = e.results[0][0].transcript;
-                    
-                    // Put text in box
-                    document.getElementById('custom-input').value = transcript;
-                    
-                    // Stop animation
-                    micBtn.classList.remove('listening');
-                    recognition.stop();
-                    
-                    // Trigger Search
-                    performSearch(transcript);
-                };
-
-                recognition.onerror = function(e) {
-                    micBtn.classList.remove('listening');
-                    recognition.stop();
-                };
-            } else {
-                alert("Voice search is not supported in this browser.");
-            }
+        function displayResults(items) {
+            resultsArea.innerHTML = '';
+            items.forEach(item => {
+                const card = document.createElement('a');
+                card.className = 'result-card';
+                card.href = item.link;
+                card.target = "_blank";
+                const displayLink = item.displayLink || item.link;
+                card.innerHTML = `
+                    <span class="result-link">${displayLink}</span>
+                    <div class="result-title">${item.title}</div>
+                    <div class="result-snippet">${item.snippet}</div>
+                `;
+                resultsArea.appendChild(card);
+            });
         }
     </script>
-
 </body>
 </html>
+
